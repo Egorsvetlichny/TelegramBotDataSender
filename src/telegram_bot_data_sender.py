@@ -1,16 +1,27 @@
+import random
+
 import telebot
 
 from src.id_tokens import tg_bot_token, chat_id_superuser
-
+from src.bot_typical_answers import hi_answers
 
 bot = telebot.TeleBot(tg_bot_token)
+
 
 @bot.message_handler(commands=['forward'])
 def forward_message(message):
     bot.forward_message(chat_id_superuser, message.chat.id, message.message_id)
 
-@bot.message_handler(func=lambda message: True)
-def handle_all_messages(message):
-    bot.reply_to(message, "Для пересылки сообщения используйте команду /forward")
+
+@bot.message_handler(func=lambda message: 'привет' in message.text.lower())
+def handle_how_are_you(message):
+    reply = random.choice(hi_answers)
+    bot.reply_to(message, reply)
+
+
+# @bot.message_handler(func=lambda message: True)
+# def handle_all_messages(message):
+#     bot.reply_to(message, "Для пересылки сообщения используйте команду /forward")
+
 
 bot.polling()
