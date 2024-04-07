@@ -13,6 +13,16 @@ def forward_message(message):
     bot.forward_message(chat_id_superuser, message.chat.id, message.message_id)
 
 
+@bot.message_handler(commands=['help'])
+def handle_help(message):
+    response = "Привет! Используй мои возможности с помощью одной из следующих команд: \n" \
+               "/start - Начать диалог с ботом \n" \
+               "/help - Получить помощь \n" \
+               "/forward - Отправить контактную информацию администратору\n" \
+               "/info - Получить информацию о боте"
+    bot.send_message(message.chat.id, response)
+
+
 @bot.message_handler(func=lambda message: 'привет' in message.text.lower())
 def handle_how_are_you(message):
     reply = random.choice(hi_answers)
