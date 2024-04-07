@@ -29,9 +29,17 @@ def handle_how_are_you(message):
     bot.reply_to(message, reply)
 
 
-# @bot.message_handler(func=lambda message: True)
-# def handle_all_messages(message):
-#     bot.reply_to(message, "Для пересылки сообщения используйте команду /forward")
+@bot.message_handler(func=lambda message: True)
+def handle_all_messages(message):
+    user = message.from_user
+
+    text = message.text.lower()
+
+    responses = ['Не понимаю, о чем ты!', 'Ну что за ерунда?', 'Используй встроенные команды!',
+                 'Не, не, это не ко мне', 'А для кого подсказка была по функционалу!?',
+                 'Используй команду "/help"', 'Хватит писать белиберду!']
+    response = random.choice(responses)
+    bot.send_message(message.chat.id, response)
 
 
 bot.polling()
