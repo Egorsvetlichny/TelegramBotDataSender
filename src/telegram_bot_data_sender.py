@@ -4,6 +4,8 @@ import telebot
 
 from src.id_tokens import tg_bot_token, admin_chat_id
 from src.bot_typical_answers import hi_answers, all_answers, help_phrases
+from src.console_logger import logger
+from src.func_tools import get_user_full_name
 
 bot = telebot.TeleBot(tg_bot_token)
 
@@ -13,6 +15,8 @@ def handle_start(message):
     bot.send_message(message.chat.id, "Привет! Я бот, который готов помочь вам! "
                                       "Чтобы узнать о моих возможностях, "
                                       "воспользуйтесь командой /help или напишите 'помощь'")
+
+    logger.info("Пользователь %s начал диалог.", get_user_full_name(message))
 
 
 @bot.message_handler(commands=['forward'])
