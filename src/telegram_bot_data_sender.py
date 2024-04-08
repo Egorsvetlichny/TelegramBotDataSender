@@ -3,7 +3,7 @@ import random
 import telebot
 
 from src.id_tokens import tg_bot_token, chat_id_superuser
-from src.bot_typical_answers import hi_answers, all_answers
+from src.bot_typical_answers import hi_answers, all_answers, help_phrases
 
 bot = telebot.TeleBot(tg_bot_token)
 
@@ -21,7 +21,7 @@ def forward_message(message):
 
 
 @bot.message_handler(commands=['info'])
-def handle_help(message):
+def handle_info(message):
     response = ("Итак, я - бот для рассылки контактной информации, "
                 "чтобы с вами можно было связаться доступно и быстро! \n"
                 "Основная моя функция = /forward. \n"
@@ -43,6 +43,11 @@ def handle_help(message):
 def handle_how_are_you(message):
     reply = random.choice(hi_answers)
     bot.reply_to(message, reply)
+
+
+@bot.message_handler(func=lambda message: any(phrase in message.text.lower() for phrase in help_phrases))
+def handle_help_messages(message):
+    handle_help(message)
 
 
 @bot.message_handler(func=lambda message: True)
