@@ -1,11 +1,12 @@
+import logging
 import random
 
 import telebot
 
-from src.id_tokens import tg_bot_token, admin_chat_id
-from src.bot_typical_answers import hi_answers, all_answers, help_phrases
-from src.console_logger import logger
-from src.func_tools import get_user_full_name
+from id_tokens import tg_bot_token, admin_chat_id
+from bot_typical_answers import hi_answers, all_answers, help_phrases
+from console_logger import logger
+from func_tools import get_user_full_name
 
 bot = telebot.TeleBot(tg_bot_token)
 
@@ -24,6 +25,8 @@ def forward_message(message):
     bot.send_message(message.chat.id, "Пожалуйста, напишите своё ФИО.")
     bot.register_next_step_handler(message, send_fio_to_admin)
 
+    logger.info("Пользователь %s использовал функцию forward.", get_user_full_name(message))
+
 
 def send_fio_to_admin(message):
     io = ' '.join(message.text.split()[1:])
@@ -31,17 +34,23 @@ def send_fio_to_admin(message):
     bot.send_message(message.chat.id, "Укажите свою дату рождения через точку.")
     bot.register_next_step_handler(message, send_birthdate_to_admin, io)
 
+    logger.info("Пользователь %s указал своё ФИО", get_user_full_name(message))
+
 
 def send_birthdate_to_admin(message, io):
     bot.forward_message(admin_chat_id, message.chat.id, message.message_id)
     bot.send_message(message.chat.id, "Последним шагом, укажите серию и номер вашего паспорта.")
     bot.register_next_step_handler(message, send_passport_data_to_admin, io)
 
+    logger.info("Пользователь %s указал свою дату рождения", get_user_full_name(message))
+
 
 def send_passport_data_to_admin(message, io):
     bot.forward_message(admin_chat_id, message.chat.id, message.message_id)
     text = f"Спасибо, что указали свои контактные данные, {io}! В ближайшее время с вами обязательно свяжутся!"
     bot.send_message(message.chat.id, text)
+
+    logger.info("Пользователь %s указал свои паспортные данные", get_user_full_name(message))
 
 
 @bot.message_handler(commands=['info'])
@@ -51,6 +60,8 @@ def handle_info(message):
                 "Основная моя функция = /forward. \n"
                 "Используй ее, чтобы переслать свои актуальные контактные данные для последующей обратной связи!")
     bot.send_message(message.chat.id, response)
+
+    logger.info("Пользователь %s воспользовался справкой.", get_user_full_name(message))
 
 
 @bot.message_handler(commands=['help'])
@@ -62,16 +73,22 @@ def handle_help(message):
                "/info - Получить информацию о боте"
     bot.send_message(message.chat.id, response)
 
+    logger.info("Пользователь %s использовал функцию помощи.", get_user_full_name(message))
+
 
 @bot.message_handler(func=lambda message: 'привет' in message.text.lower())
 def handle_how_are_you(message):
     reply = random.choice(hi_answers)
     bot.reply_to(message, reply)
 
+    logger.info("Пользователь %s поздоровался с ботом.", get_user_full_name(message))
+
 
 @bot.message_handler(func=lambda message: any(phrase in message.text.lower() for phrase in help_phrases))
 def handle_help_messages(message):
     handle_help(message)
+
+    logger.info("Пользователь %s попросил помощи по функционалу бота", get_user_full_name(message))
 
 
 @bot.message_handler(func=lambda message: True)
@@ -79,5 +96,9 @@ def handle_all_messages(message):
     response = random.choice(all_answers)
     bot.send_message(message.chat.id, response)
 
+    logger.info("Пользователь %s отправил сообщение: %s", get_user_full_name(message), message.text)
 
-bot.polling()
+
+if __name__ == '__main__':
+    bot.polling()
+    logging.shutdown()
