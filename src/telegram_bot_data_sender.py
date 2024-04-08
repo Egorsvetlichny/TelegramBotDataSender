@@ -2,7 +2,7 @@ import random
 
 import telebot
 
-from src.id_tokens import tg_bot_token, chat_id_superuser
+from src.id_tokens import tg_bot_token, admin_chat_id
 from src.bot_typical_answers import hi_answers, all_answers, help_phrases
 
 bot = telebot.TeleBot(tg_bot_token)
@@ -17,7 +17,27 @@ def handle_start(message):
 
 @bot.message_handler(commands=['forward'])
 def forward_message(message):
-    bot.forward_message(chat_id_superuser, message.chat.id, message.message_id)
+    bot.send_message(message.chat.id, "Пожалуйста, напишите своё ФИО.")
+    bot.register_next_step_handler(message, send_fio_to_admin)
+
+
+def send_fio_to_admin(message):
+    io = ' '.join(message.text.split()[1:])
+    bot.forward_message(admin_chat_id, message.chat.id, message.message_id)
+    bot.send_message(message.chat.id, "Укажите свою дату рождения через точку.")
+    bot.register_next_step_handler(message, send_birthdate_to_admin, io)
+
+
+def send_birthdate_to_admin(message, io):
+    bot.forward_message(admin_chat_id, message.chat.id, message.message_id)
+    bot.send_message(message.chat.id, "Последним шагом, укажите серию и номер вашего паспорта.")
+    bot.register_next_step_handler(message, send_passport_data_to_admin, io)
+
+
+def send_passport_data_to_admin(message, io):
+    bot.forward_message(admin_chat_id, message.chat.id, message.message_id)
+    text = f"Спасибо, что указали свои контактные данные, {io}! В ближайшее время с вами обязательно свяжутся!"
+    bot.send_message(message.chat.id, text)
 
 
 @bot.message_handler(commands=['info'])
