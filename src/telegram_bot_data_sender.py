@@ -8,6 +8,13 @@ from src.bot_typical_answers import hi_answers, all_answers
 bot = telebot.TeleBot(tg_bot_token)
 
 
+@bot.message_handler(commands=['start'])
+def handle_start(message):
+    bot.send_message(message.chat.id, "Привет! Я бот, который готов помочь вам! "
+                                      "Чтобы узнать о моих возможностях, "
+                                      "воспользуйтесь командой /help или напишите 'помощь'")
+
+
 @bot.message_handler(commands=['forward'])
 def forward_message(message):
     bot.forward_message(chat_id_superuser, message.chat.id, message.message_id)
