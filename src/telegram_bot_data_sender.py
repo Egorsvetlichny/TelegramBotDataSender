@@ -3,7 +3,7 @@ import random
 import telebot
 
 from src.id_tokens import tg_bot_token, chat_id_superuser
-from src.bot_typical_answers import hi_answers
+from src.bot_typical_answers import hi_answers, all_answers
 
 bot = telebot.TeleBot(tg_bot_token)
 
@@ -31,14 +31,7 @@ def handle_how_are_you(message):
 
 @bot.message_handler(func=lambda message: True)
 def handle_all_messages(message):
-    user = message.from_user
-
-    text = message.text.lower()
-
-    responses = ['Не понимаю, о чем ты!', 'Ну что за ерунда?', 'Используй встроенные команды!',
-                 'Не, не, это не ко мне', 'А для кого подсказка была по функционалу!?',
-                 'Используй команду "/help"', 'Хватит писать белиберду!']
-    response = random.choice(responses)
+    response = random.choice(all_answers)
     bot.send_message(message.chat.id, response)
 
 
