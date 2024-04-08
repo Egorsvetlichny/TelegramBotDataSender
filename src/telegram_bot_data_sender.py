@@ -13,6 +13,15 @@ def forward_message(message):
     bot.forward_message(chat_id_superuser, message.chat.id, message.message_id)
 
 
+@bot.message_handler(commands=['info'])
+def handle_help(message):
+    response = ("Итак, я - бот для рассылки контактной информации, "
+                "чтобы с вами можно было связаться доступно и быстро! \n"
+                "Основная моя функция = /forward. \n"
+                "Используй ее, чтобы переслать свои актуальные контактные данные для последующей обратной связи!")
+    bot.send_message(message.chat.id, response)
+
+
 @bot.message_handler(commands=['help'])
 def handle_help(message):
     response = "Привет! Используй мои возможности с помощью одной из следующих команд: \n" \
