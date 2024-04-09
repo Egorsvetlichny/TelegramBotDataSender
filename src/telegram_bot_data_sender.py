@@ -18,7 +18,7 @@ def handle_start(message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     button1 = types.KeyboardButton("Инфо")
     button2 = types.KeyboardButton("Помощь")
-    button3 = types.KeyboardButton("Переслать данные")
+    button3 = types.KeyboardButton("Выбрать вакансию")
     keyboard.add(button1, button2, button3)
 
     bot.send_message(message.chat.id, "Привет! Я бот, который готов помочь вам! "
@@ -26,6 +26,19 @@ def handle_start(message):
                                       "воспользуйтесь командой /help или напишите 'помощь'", reply_markup=keyboard)
 
     logger.info("Пользователь %s начал диалог.", get_user_full_name(message))
+
+
+@bot.message_handler(commands=['vacancy'])
+def vacancy_choice(message):
+    response = "/kassir | Кассир - ... \n" \
+               "/start - Начать диалог с ботом \n" \
+               "/help - Получить помощь \n" \
+               "/forward - Отправить контактную информацию администратору\n" \
+               "/info - Получить информацию о боте"
+
+    bot.send_message(message.chat.id, response)
+
+    logger.info('Пользователь %s нажал на кнопку "Выбрать вакансию"', get_user_full_name(message))
 
 
 # Блок функции forward
@@ -82,12 +95,7 @@ def handle_info(message):
 
 @bot.message_handler(commands=['help'])
 def handle_help(message):
-    response = "Привет! Используй мои возможности с помощью одной из следующих команд: \n" \
-               "/start - Начать диалог с ботом \n" \
-               "/help - Получить помощь \n" \
-               "/forward - Отправить контактную информацию администратору\n" \
-               "/info - Получить информацию о боте"
-    bot.send_message(message.chat.id, response)
+    bot.send_message(message.chat.id, help_response)
 
     logger.info("Пользователь %s использовал функцию помощи.", get_user_full_name(message))
 
@@ -119,8 +127,8 @@ def handle_all_messages(message):
         handle_info(message)
     elif message.text == 'Помощь':
         handle_help(message)
-    elif message.text == 'Переслать данные':
-        forward_message(message)
+    elif message.text == 'Выбрать вакансию':
+        vacancy_choice(message)
     else:
         response = random.choice(all_answers)
         bot.send_message(message.chat.id, response)
