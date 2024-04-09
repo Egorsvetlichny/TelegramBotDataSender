@@ -1,7 +1,7 @@
+from bot import bot
 from bot_typical_answers import *
 from console_logger import logger
 from func_tools import get_user_full_name
-from telegram_bot_data_sender import bot
 
 vacancys_function = [
     '/vacancy',
