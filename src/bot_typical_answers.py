@@ -35,8 +35,8 @@ help_response = "Привет! Используй мои возможности 
                 "/info - Получить информацию о боте"
 
 vacancy_response = "/cashier - Кассир \n" \
-                   "/salesConsultant - Продавец-консультант \n" \
+                   "/sales_consultant - Продавец-консультант \n" \
                    "/barista - Бариста \n" \
-                   "/salesWorker - Работник торгового зала \n" \
-                   "/orderPicker - Сборщик заказов \n" \
-                   "/otherVacancies - Другие вакансии"
+                   "/sales_worker - Работник торгового зала \n" \
+                   "/order_picker - Сборщик заказов \n" \
+                   "/other_vacancies - Другие вакансии"

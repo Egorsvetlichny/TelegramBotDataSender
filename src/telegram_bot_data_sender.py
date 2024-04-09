@@ -3,9 +3,9 @@ import random
 from telebot import types
 
 import telebot
-from telebot.types import ReplyKeyboardMarkup
 
 from id_tokens import tg_bot_token, admin_chat_id
+from bot_function import *
 from bot_typical_answers import *
 from console_logger import logger
 from func_tools import get_user_full_name
@@ -19,7 +19,8 @@ def handle_start(message):
     button1 = types.KeyboardButton("Инфо")
     button2 = types.KeyboardButton("Помощь")
     button3 = types.KeyboardButton("Выбрать вакансию")
-    keyboard.add(button1, button2, button3)
+    button4 = types.KeyboardButton("Заполнить анкету")
+    keyboard.add(button1, button2, button3, button4)
 
     bot.send_message(message.chat.id, "Привет! Я бот, который готов помочь вам! "
                                       "Чтобы узнать о моих возможностях, "
@@ -28,11 +29,9 @@ def handle_start(message):
     logger.info("Пользователь %s начал диалог.", get_user_full_name(message))
 
 
-@bot.message_handler(commands=['vacancy'])
-def vacancy_choice(message):
-    bot.send_message(message.chat.id, vacancy_response)
-
-    logger.info('Пользователь %s нажал на кнопку "Выбрать вакансию"', get_user_full_name(message))
+@bot.message_handler(func=lambda message: any(vacancy in message.text for vacancy in vacancys_function))
+def handle_vacancys(message):
+    globals()[message.text.replace('/', '')](message)
 
 
 # Блок функции forward
@@ -123,6 +122,8 @@ def handle_all_messages(message):
         handle_help(message)
     elif message.text == 'Выбрать вакансию':
         vacancy_choice(message)
+    elif message.text == 'Заполнить анкету':
+        forward_message(message)
     else:
         response = random.choice(all_answers)
         bot.send_message(message.chat.id, response)
