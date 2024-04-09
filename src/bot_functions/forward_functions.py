@@ -2,6 +2,7 @@ from bot import bot
 from console_logger import logger
 from func_tools import get_user_full_name
 from id_tokens import admin_chat_id
+from validation import validate_phone_number
 
 
 @bot.message_handler(commands=['forward'])
@@ -29,11 +30,20 @@ def remember_user_birthdate(message, data_arr):
 
 
 def remember_user_phone_number(message, data_arr):
-    data_arr.append(message.text)
-    bot.send_message(message.chat.id, "Укажите город фактического проживания")
-    bot.register_next_step_handler(message, send_all_data_to_admin, data_arr)
+    phone_number = validate_phone_number(message.text)
 
-    logger.info("Пользователь %s указал свой номер телефона", get_user_full_name(message))
+    if not phone_number:
+        bot.send_message(message.chat.id, "Неверный формат номера телефона. "
+                                          "Пожалуйста, отправьте номер в формате +7XXXXXXXXXX или 8XXXXXXXXXX.")
+        bot.register_next_step_handler(message, remember_user_phone_number, data_arr)
+
+        logger.info("Пользователь %s неверно указал номер телефона", get_user_full_name(message))
+    else:
+        data_arr.append(phone_number[1:])
+        bot.send_message(message.chat.id, "Укажите город фактического проживания")
+        bot.register_next_step_handler(message, send_all_data_to_admin, data_arr)
+
+        logger.info("Пользователь %s указал свой номер телефона", get_user_full_name(message))
 
 
 def send_all_data_to_admin(message, data_arr):
