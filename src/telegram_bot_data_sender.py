@@ -30,13 +30,7 @@ def handle_start(message):
 
 @bot.message_handler(commands=['vacancy'])
 def vacancy_choice(message):
-    response = "/kassir | Кассир - ... \n" \
-               "/start - Начать диалог с ботом \n" \
-               "/help - Получить помощь \n" \
-               "/forward - Отправить контактную информацию администратору\n" \
-               "/info - Получить информацию о боте"
-
-    bot.send_message(message.chat.id, response)
+    bot.send_message(message.chat.id, vacancy_response)
 
     logger.info('Пользователь %s нажал на кнопку "Выбрать вакансию"', get_user_full_name(message))
 
