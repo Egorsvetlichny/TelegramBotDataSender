@@ -4,7 +4,7 @@ import random
 import telebot
 
 from id_tokens import tg_bot_token, admin_chat_id
-from bot_typical_answers import hi_answers, all_answers, help_phrases
+from bot_typical_answers import *
 from console_logger import logger
 from func_tools import get_user_full_name
 
@@ -76,12 +76,20 @@ def handle_help(message):
     logger.info("Пользователь %s использовал функцию помощи.", get_user_full_name(message))
 
 
-@bot.message_handler(func=lambda message: 'привет' in message.text.lower())
-def handle_how_are_you(message):
+@bot.message_handler(func=lambda message: any(word in message.text.lower() for word in hi_words))
+def handle_hi(message):
     reply = random.choice(hi_answers)
     bot.reply_to(message, reply)
 
     logger.info("Пользователь %s поздоровался с ботом.", get_user_full_name(message))
+
+
+@bot.message_handler(func=lambda message: any(phrase in message.text.lower() for phrase in how_are_you_phrases))
+def handle_how_are_you(message):
+    reply = random.choice(how_are_you_answers)
+    bot.reply_to(message, reply)
+
+    logger.info("Пользователь %s спросил у бота, как дела.", get_user_full_name(message))
 
 
 @bot.message_handler(func=lambda message: any(phrase in message.text.lower() for phrase in help_phrases))
