@@ -1,7 +1,9 @@
 import logging
 import random
+from telebot import types
 
 import telebot
+from telebot.types import ReplyKeyboardMarkup
 
 from id_tokens import tg_bot_token, admin_chat_id
 from bot_typical_answers import *
@@ -13,13 +15,20 @@ bot = telebot.TeleBot(tg_bot_token)
 
 @bot.message_handler(commands=['start'])
 def handle_start(message):
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+    button1 = types.KeyboardButton("Инфо")
+    button2 = types.KeyboardButton("Помощь")
+    button3 = types.KeyboardButton("Переслать данные")
+    keyboard.add(button1, button2, button3)
+
     bot.send_message(message.chat.id, "Привет! Я бот, который готов помочь вам! "
                                       "Чтобы узнать о моих возможностях, "
-                                      "воспользуйтесь командой /help или напишите 'помощь'")
+                                      "воспользуйтесь командой /help или напишите 'помощь'", reply_markup=keyboard)
 
     logger.info("Пользователь %s начал диалог.", get_user_full_name(message))
 
 
+# Блок функции forward
 @bot.message_handler(commands=['forward'])
 def forward_message(message):
     bot.send_message(message.chat.id, "Пожалуйста, напишите своё ФИО.")
@@ -29,25 +38,27 @@ def forward_message(message):
 
 
 def send_fio_to_admin(message):
-    io = ' '.join(message.text.split()[1:])
-    bot.forward_message(admin_chat_id, message.chat.id, message.message_id)
+    data_arr = [' '.join(message.text.split()[1:]), message.text]
     bot.send_message(message.chat.id, "Укажите свою дату рождения через точку.")
-    bot.register_next_step_handler(message, send_birthdate_to_admin, io)
+    bot.register_next_step_handler(message, send_birthdate_to_admin, data_arr)
 
     logger.info("Пользователь %s указал своё ФИО", get_user_full_name(message))
 
 
-def send_birthdate_to_admin(message, io):
-    bot.forward_message(admin_chat_id, message.chat.id, message.message_id)
+def send_birthdate_to_admin(message, data_arr):
+    # bot.forward_message(admin_chat_id, message.chat.id, message.message_id)
+    data_arr.append(message.text)
     bot.send_message(message.chat.id, "Последним шагом, укажите серию и номер вашего паспорта.")
-    bot.register_next_step_handler(message, send_passport_data_to_admin, io)
+    bot.register_next_step_handler(message, send_passport_data_to_admin, data_arr)
 
     logger.info("Пользователь %s указал свою дату рождения", get_user_full_name(message))
 
 
-def send_passport_data_to_admin(message, io):
-    bot.forward_message(admin_chat_id, message.chat.id, message.message_id)
-    text = f"Спасибо, что указали свои контактные данные, {io}! В ближайшее время с вами обязательно свяжутся!"
+def send_passport_data_to_admin(message, data_arr):
+    # bot.forward_message(admin_chat_id, message.chat.id, message.message_id)
+    # bot.send_message(admin_chat_id, f"{' '.join(data_arr[1:])} {message.text}")
+    bot.send_message(admin_chat_id, f"#ФИО: {data_arr[1]} \nДата рождения: {data_arr[2]} \nПаспорт: {message.text}")
+    text = f"Спасибо, что указали свои контактные данные, {data_arr[0]}! В ближайшее время с вами обязательно свяжутся!"
     bot.send_message(message.chat.id, text)
 
     logger.info("Пользователь %s указал свои паспортные данные", get_user_full_name(message))
@@ -57,7 +68,7 @@ def send_passport_data_to_admin(message, io):
 def handle_info(message):
     response = ("Итак, я - бот для рассылки контактной информации, "
                 "чтобы с вами можно было связаться доступно и быстро! \n"
-                "Основная моя функция = /forward. \n"
+                "Основная моя функция - /forward. \n"
                 "Используй ее, чтобы переслать свои актуальные контактные данные для последующей обратной связи!")
     bot.send_message(message.chat.id, response)
 
@@ -96,15 +107,20 @@ def handle_how_are_you(message):
 def handle_help_messages(message):
     handle_help(message)
 
-    logger.info("Пользователь %s попросил помощи по функционалу бота", get_user_full_name(message))
-
 
 @bot.message_handler(func=lambda message: True)
 def handle_all_messages(message):
-    response = random.choice(all_answers)
-    bot.send_message(message.chat.id, response)
+    if message.text == 'Инфо':
+        handle_info(message)
+    elif message.text == 'Помощь':
+        handle_help(message)
+    elif message.text == 'Переслать данные':
+        forward_message(message)
+    else:
+        response = random.choice(all_answers)
+        bot.send_message(message.chat.id, response)
 
-    logger.info("Пользователь %s отправил сообщение: %s", get_user_full_name(message), message.text)
+        logger.info("Пользователь %s отправил сообщение: %s", get_user_full_name(message), message.text)
 
 
 if __name__ == '__main__':
