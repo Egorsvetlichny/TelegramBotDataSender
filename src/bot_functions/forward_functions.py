@@ -25,7 +25,7 @@ def remember_user_fio(message):
         bot.send_message(message.chat.id, "Укажите дату рождения в формате: дд.мм.гггг")
         bot.register_next_step_handler(message, remember_user_birthdate, data_arr)
 
-        logger.info("Пользователь %s указал своё ФИО", get_user_full_name(message))
+        logger.info("Пользователь %s указал фамилию и имя", get_user_full_name(message))
 
 
 def remember_user_birthdate(message, data_arr):
@@ -61,8 +61,16 @@ def remember_user_phone_number(message, data_arr):
 
 
 def send_all_data_to_admin(message, data_arr):
-    bot.send_message(admin_chat_id, f"{data_arr[1]} \n{data_arr[2]} \n{data_arr[3]} \n{message.text}")
-    text = f"Спасибо, что указали свои контактные данные, {data_arr[0]}! В ближайшее время с вами обязательно свяжутся!"
-    bot.send_message(message.chat.id, text)
+    if not validate_city(message.text):
+        bot.send_message(message.chat.id, "Неверный формат названия города. "
+                                          "Пожалуйста, отправьте название своего города без лишних символов")
+        bot.register_next_step_handler(message, send_all_data_to_admin, data_arr)
 
-    logger.info("Пользователь %s указал свой город", get_user_full_name(message))
+        logger.info("Пользователь %s неверно указал название города", get_user_full_name(message))
+    else:
+        bot.send_message(admin_chat_id, f"{data_arr[1]} \n{data_arr[2]} \n{data_arr[3]} \n{message.text}")
+        text = (f"Спасибо, что указали свои контактные данные, {data_arr[0]}! "
+                f"В ближайшее время с вами обязательно свяжутся!")
+        bot.send_message(message.chat.id, text)
+
+        logger.info("Пользователь %s указал свой город", get_user_full_name(message))
