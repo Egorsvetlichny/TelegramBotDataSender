@@ -27,7 +27,7 @@ def handle_start(message):
     logger.info("Пользователь %s начал диалог", get_user_full_name(message))
 
 
-@bot.message_handler(func=lambda message: any(vacancy in message.text for vacancy in vacancys_function))
+@bot.message_handler(func=lambda message: any(vacancy in message.text for vacancy in vacancy_functions))
 def handle_vacancys(message):
     globals()[message.text.replace('/', '')](message)
 

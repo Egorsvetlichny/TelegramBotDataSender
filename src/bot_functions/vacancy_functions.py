@@ -3,7 +3,7 @@ from bot_typical_answers import *
 from console_logger import logger
 from func_tools import get_user_full_name
 
-vacancys_function = [
+vacancy_functions = [
     '/vacancy',
     '/cashier',
     '/sales_consultant',
@@ -23,16 +23,15 @@ def vacancy_choice(message):
 
 @bot.message_handler(commands=['cashier'])
 def cashier(message):
-    text = 'Уникальное сообщение'
-    bot.send_message(message.chat.id, text)
+    text = '<b>Жирный</b>\n<i>Курсив</i>\n<u>Подчеркнутый</u>"'
+    bot.send_message(message.chat.id, text, parse_mode="HTML")
 
     logger.info('Пользователь %s выбрал вакансию кассира', get_user_full_name(message))
 
 
 @bot.message_handler(commands=['sales_consultant'])
 def sales_consultant(message):
-    text = 'Уникальное сообщение'
-    bot.send_message(message.chat.id, text)
+    bot.send_message(message.chat.id, sales_consultant_text)
 
     logger.info('Пользователь %s выбрал вакансию продавца-консультанта', get_user_full_name(message))
 
