@@ -21,7 +21,7 @@ def handle_start(message):
                                       "Чтобы узнать о моих возможностях, "
                                       "воспользуйтесь командой /help или напишите 'помощь'", reply_markup=keyboard)
 
-    with open(r'C:\Users\fkhor\PycharmProjects\TelegramBotDataSender\content\greeting.jpg', 'rb') as img:
+    with open(r'C:\Users\fkhor\PycharmProjects\TelegramBotDataSender\content\vkus_vill.jpg', 'rb') as img:
         bot.send_photo(message.chat.id, img)
 
     logger.info("Пользователь %s начал диалог", get_user_full_name(message))
