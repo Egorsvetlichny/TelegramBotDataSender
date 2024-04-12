@@ -29,7 +29,7 @@ def remember_user_fio(message):
 
 
 def remember_user_birthdate(message, data_arr):
-    if not validate_date(message.text):
+    if not validate_birthdate(message.text):
         bot.send_message(message.chat.id, "Неверный формат даты. "
                                           "Пожалуйста, отправьте дату в формате: дд.мм.гггг.")
         bot.register_next_step_handler(message, remember_user_birthdate, data_arr)

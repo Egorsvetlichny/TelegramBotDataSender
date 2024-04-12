@@ -1,4 +1,5 @@
 from src.validation.phone_number_validation import validate_phone_number
 from src.validation.date_validation import validate_date
+from src.validation.date_validation import validate_birthdate
 from src.validation.name_validation import validate_name
 from src.validation.city_validation import validate_city

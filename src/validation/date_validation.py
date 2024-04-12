@@ -20,20 +20,17 @@ def validate_date(date_string):
 
 def validate_birthdate(birthdate_str):
     try:
-        # Преобразование строки в объект datetime
-        birthdate = datetime.strptime(birthdate_str, '%Y-%m-%d')
+        birthdate = datetime.strptime(birthdate_str, '%d.%m.%Y')
 
-        # Проверка на возраст 18+
         eighteen_years_ago = datetime.now() - timedelta(days=365 * 18)
         if birthdate > eighteen_years_ago:
             return False
 
-        # Проверка на возраст менее 100 лет
         hundred_years_ago = datetime.now() - timedelta(days=365 * 100)
         if birthdate < hundred_years_ago:
             return False
 
         return True
+
     except ValueError:
-        # Если возникла ошибка при преобразовании строки в дату
         return False
